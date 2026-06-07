@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بهینه‌ساز برش چوب — گالری باران</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1B2A4A;
+    --navy-light: #2C3E6B;
+    --gold: #C9A84C;
+    --gold-light: #F5E6C8;
+    --gold-pale: #FDF8EE;
+    --cream: #FAF7F2;
+    --white: #FFFFFF;
+    --gray: #6B7280;
+    --gray-light: #F3F4F6;
+    --red: #DC2626;
+    --green: #16A34A;
+    --border: #E5DDD0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Vazirmatn', sans-serif;
+    background: var(--cream);
+    color: var(--navy);
+    min-height: 100vh;
+    direction: rtl;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--navy);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 40px,
+      rgba(201,168,76,0.05) 40px,
+      rgba(201,168,76,0.05) 41px
+    );
+  }
+  .header-inner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 32px;
+  }
+  .logo-block { display: flex; align-items: center; gap: 14px; }
+  .logo-icon {
+    width: 48px; height: 48px;
+    background: var(--gold);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .logo-text h1 { color: var(--white); font-size: 18px; font-weight: 700; line-height: 1.2; }
+  .logo-text span { color: var(--gold); font-size: 12px; font-weight: 400; letter-spacing: 0.05em; }
+  .header-badge {
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  /* ── Layout ── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 28px 20px 60px; }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media(max-width: 760px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(27,42,74,0.06);
+  }
+  .card-head {
+    background: var(--navy);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-head h2 { color: var(--white); font-size: 14px; font-weight: 600; }
+  .card-head .icon { font-size: 16px; }
+  .card-body { padding: 20px; }
+
+  /* ── Form elements ── */
+  label { display: block; font-size: 12px; font-weight: 600; color: var(--gray); margin-bottom: 5px; }
+  input[type="number"], input[type="text"], select {
+    width: 100%;
+    padding: 9px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Vazirmatn', sans-serif;
+    font-size: 14px;
+    color: var(--navy);
+    background: var(--white);
+    transition: border-color 0.2s;
+    direction: ltr;
+    text-align: center;
+  }
+  input:focus, select:focus { outline: none; border-color: var(--gold); }
+  .field { margin-bottom: 14px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .field-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+  /* ── Section label ── */
+  .section-label {
+    font-size: 11px; font-weight: 700;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--gold-light);
+    padding-bottom: 6px;
+    margin-bottom: 14px;
+    margin-top: 4px;
+  }
+
+  /* ── Size table ── */
+  .sizes-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .sizes-table th {
+    background: var(--gold-pale);
+    color: var(--navy);
+    font-weight: 700;
+    padding: 9px 8px;
+    text-align: center;
+    border-bottom: 2px solid var(--gold-light);
+    font-size: 12px;
+  }
+  .sizes-table td { padding: 7px 8px; text-align: center; border-bottom: 1px solid var(--gray-light); }
+  .sizes-table tr:last-child td { border-bottom: none; }
+  .sizes-table input[type="number"] { padding: 6px 8px; font-size: 13px; }
+  .sizes-table .remove-btn {
+    background: none; border: none; cursor: pointer;
+    color: #DC2626; font-size: 16px; padding: 2px 6px;
+    border-radius: 4px; transition: background 0.15s;
+  }
+  .sizes-table .remove-btn:hover { background: #FEF2F2; }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 10px 20px; border-radius: 8px;
+    font-family: 'Vazirmatn', sans-serif;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none; transition: all 0.2s;
+  }
+  .btn-primary { background: var(--navy); color: var(--white); }
+  .btn-primary:hover { background: var(--navy-light); transform: translateY(-1px); }
+  .btn-gold { background: var(--gold); color: var(--navy); }
+  .btn-gold:hover { background: #B8953E; transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent; color: var(--navy);
+    border: 1.5px solid var(--border);
+  }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-sm { padding: 6px 12px; font-size: 12px; }
+  .btn-danger { background: #FEF2F2; color: var(--red); border: 1px solid #FECACA; }
+  .btn-danger:hover { background: #DC2626; color: white; }
+
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+
+  /* ── Cut type toggle ── */
+  .cut-toggle { display: flex; gap: 0; border: 1.5px solid var(--border); border-radius: 9px; overflow: hidden; }
+  .cut-toggle label {
+    flex: 1; text-align: center;
+    padding: 9px 8px;
+    cursor: pointer;
+    font-size: 13px; font-weight: 500;
+    color: var(--gray);
+    background: var(--white);
+    transition: all 0.2s;
+    margin: 0;
+  }
+  .cut-toggle input[type="radio"] { display: none; }
+  .cut-toggle input[type="radio"]:checked + label {
+    background: var(--navy); color: var(--white); font-weight: 700;
+  }
+
+  /* ── Results ── */
+  #results { margin-top: 24px; display: none; }
+  #results.visible { display: block; animation: fadeUp 0.4s ease; }
+  @keyframes fadeUp { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+
+  .result-summary {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  @media(max-width:700px) { .result-summary { grid-template-columns: 1fr 1fr; } }
+
+  .stat-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+  .stat-card .val { font-size: 28px; font-weight: 800; color: var(--navy); line-height: 1; }
+  .stat-card .val.gold { color: var(--gold); }
+  .stat-card .val.green { color: var(--green); }
+  .stat-card .val.red { color: var(--red); }
+  .stat-card .lbl { font-size: 11px; color: var(--gray); margin-top: 5px; font-weight: 500; }
+
+  /* ── Patterns table ── */
+  .patterns-wrap { overflow-x: auto; }
+  table.patterns {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+  }
+  table.patterns th {
+    background: var(--navy); color: var(--white);
+    padding: 10px 12px; text-align: center;
+    font-weight: 600; font-size: 12px;
+  }
+  table.patterns td {
+    padding: 9px 12px; text-align: center;
+    border-bottom: 1px solid var(--gray-light);
+  }
+  table.patterns tr:nth-child(even) td { background: var(--gold-pale); }
+  table.patterns .bar-cell { text-align: right; padding: 6px 12px; }
+  .bar-wrap { height: 22px; background: var(--gray-light); border-radius: 4px; overflow: hidden; display: flex; }
+  .bar-seg { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 9px; color: white; font-weight: 700; min-width: 4px; }
+  .bar-waste { background: #E5E7EB; }
+
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 10px;
+    font-size: 11px; font-weight: 600;
+  }
+  .badge-green { background: #DCFCE7; color: var(--green); }
+  .badge-red { background: #FEE2E2; color: var(--red); }
+  .badge-gold { background: var(--gold-light); color: #92610A; }
+
+  /* ── Parts table ── */
+  table.parts { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.parts th {
+    background: var(--gold); color: var(--navy);
+    padding: 10px 12px; font-weight: 700; font-size: 12px; text-align: center;
+  }
+  table.parts td { padding: 9px 12px; text-align: center; border-bottom: 1px solid var(--gray-light); }
+  table.parts tr:hover td { background: var(--gold-pale); }
+
+  /* ── Cost table ── */
+  table.costs { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.costs td { padding: 10px 14px; border-bottom: 1px solid var(--gray-light); }
+  table.costs .lbl { font-weight: 600; color: var(--navy); text-align: right; }
+  table.costs .val { text-align: left; color: var(--gray); }
+  table.costs tr.total td { background: var(--navy); color: var(--white); font-weight: 700; font-size: 15px; }
+  table.costs tr.total .val { color: var(--gold); }
+
+  /* ── Print ── */
+  .print-btn-wrap { text-align: center; margin-top: 20px; }
+  @media print {
+    header, .inputs-section, .print-btn-wrap, .actions { display: none !important; }
+    #results { display: block !important; }
+    body { background: white; }
+    .card { box-shadow: none; border: 1px solid #ccc; }
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+  .tip { font-size: 12px; color: var(--gray); background: var(--gold-pale); border-right: 3px solid var(--gold); padding: 8px 12px; border-radius: 0 6px 6px 0; margin-bottom: 14px; }
+
+  /* colors for bar segments */
+  .c0{background:#1B2A4A} .c1{background:#C9A84C} .c2{background:#2C7873}
+  .c3{background:#6C4A8F} .c4{background:#C44B2A} .c5{background:#2A7EC4}
+  .c6{background:#7EC42A} .c7{background:#C42A7E} .c8{background:#2AC4B3}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-block">
+      <div class="logo-icon">🪵</div>
+      <div class="logo-text">
+        <h1>بهینه‌ساز برش چوب</h1>
+        <span>Baran Art Gallery — سیستم مدیریت کارگاه</span>
+      </div>
+    </div>
+    <div class="header-badge">نسخه ۱.۰</div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="inputs-section">
+    <div class="grid-2">
+
+      <!-- Card: مشخصات چوب -->
+      <div class="card">
+        <div class="card-head"><span class="icon">📐</span><h2>مشخصات شاخه چوب</h2></div>
+        <div class="card-body">
+          <div class="section-label">ابعاد شاخه</div>
+          <div class="field-row">
+            <div class="field">
+              <label>طول شاخه (سانتیمتر)</label>
+              <input type="number" id="stick_len" value="300" min="50" step="1">
+            </div>
+            <div class="field">
+              <label>ضخامت چوب — بُعد کوچک (سانت)</label>
+              <input type="number" id="wood_thick" value="2" min="0.5" step="0.5">
+            </div>
+          </div>
+          <div class="tip">مثال: شاخه ۳ متری با مقطع ۲×۴ → طول = ۳۰۰، ضخامت = ۲</div>
+
+          <div class="section-label">نوع برش</div>
+          <div class="cut-toggle">
+            <input type="radio" name="cut_type" id="ct_perp" value="perp" checked>
+            <label for="ct_perp">⊥ برش عمودی (استاندارد)</label>
+            <input type="radio" name="cut_type" id="ct_persian" value="persian">
+            <label for="ct_persian">∥ فارسی‌بر (قاب‌کاری)</label>
+          </div>
+          <p style="font-size:11px;color:var(--gray);margin-top:8px;text-align:center">
+            برش عمودی: قطعات کوتاه = اندازه منهای ۲×ضخامت | فارسی‌بر: همه قطعات = اندازه اصلی
+          </p>
+
+          <div class="divider"></div>
+          <div class="section-label">هزینه‌ها</div>
+          <div class="field-row">
+            <div class="field">
+              <label>قیمت هر شاخه (لیر)</label>
+              <input type="number" id="price_stick" value="0" min="0" step="0.5">
+            </div>
+            <div class="field">
+              <label>هزینه برش (لیر — کل)</label>
+              <input type="number" id="cost_cut" value="0" min="0" step="0.5">
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>هزینه حمل (لیر)</label>
+              <input type="number" id="cost_ship" value="0" min="0" step="0.5">
+            </div>
+            <div class="field">
+              <label>هزینه متفرقه (لیر)</label>
+              <input type="number" id="cost_misc" value="0" min="0" step="0.5">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card: سایزهای بوم -->
+      <div class="card">
+        <div class="card-head"><span class="icon">🖼</span><h2>سایزهای بوم موردنیاز</h2></div>
+        <div class="card-body">
+          <div class="section-label">لیست سفارش</div>
+          <table class="sizes-table" id="sizes-table">
+            <thead>
+              <tr>
+                <th>تعداد</th>
+                <th>عرض (سانت)</th>
+                <th>ارتفاع (سانت)</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="sizes-body"></tbody>
+          </table>
+          <div class="actions" style="margin-top:14px">
+            <button class="btn btn-outline btn-sm" onclick="addRow()">＋ افزودن سایز</button>
+            <button class="btn btn-outline btn-sm" onclick="loadExample()">📋 مثال نمونه</button>
+            <button class="btn btn-danger btn-sm" onclick="clearAll()">🗑 پاک کردن</button>
+          </div>
+          <div class="divider"></div>
+          <button class="btn btn-gold" style="width:100%;justify-content:center;padding:13px" onclick="calculate()">
+            ⚙️ محاسبه بهینه‌ترین برش
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div id="results">
+
+    <div class="result-summary" id="summary-cards"></div>
+
+    <div class="grid-2">
+      <!-- الگوهای برش -->
+      <div class="card">
+        <div class="card-head"><span class="icon">🪚</span><h2>الگوهای برش — دستورالعمل نجار</h2></div>
+        <div class="card-body">
+          <div class="patterns-wrap"><table class="patterns" id="patterns-table"></table></div>
+        </div>
+      </div>
+
+      <!-- جدول قطعات -->
+      <div class="card">
+        <div class="card-head"><span class="icon">📦</span><h2>جدول تحویل قطعات</h2></div>
+        <div class="card-body">
+          <table class="parts" id="parts-table"></table>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2" style="margin-top:20px">
+      <!-- هزینه‌ها -->
+      <div class="card">
+        <div class="card-head"><span class="icon">💰</span><h2>محاسبه هزینه کل چوب</h2></div>
+        <div class="card-body">
+          <table class="costs" id="costs-table"></table>
+        </div>
+      </div>
+
+      <!-- خلاصه پرت -->
+      <div class="card">
+        <div class="card-head"><span class="icon">📊</span><h2>تحلیل پرت چوب</h2></div>
+        <div class="card-body" id="waste-analysis"></div>
+      </div>
+    </div>
+
+    <div class="print-btn-wrap">
+      <button class="btn btn-primary" onclick="window.print()">🖨 چاپ / ذخیره PDF برای نجار</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── State ──
+let rows = [];
+let rowId = 0;
+const MIN_USABLE = 15; // سانتیمتر
+
+function addRow(cnt=1, w=0, h=0) {
+  const id = rowId++;
+  rows.push({id, cnt, w, h});
+  renderTable();
+}
+
+function removeRow(id) {
+  rows = rows.filter(r => r.id !== id);
+  renderTable();
+}
+
+function renderTable() {
+  const tbody = document.getElementById('sizes-body');
+  tbody.innerHTML = '';
+  rows.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input type="number" value="${r.cnt}" min="1" onchange="updateRow(${r.id},'cnt',this.value)" style="width:60px"></td>
+      <td><input type="number" value="${r.w}" min="1" onchange="updateRow(${r.id},'w',this.value)" style="width:70px"></td>
+      <td><input type="number" value="${r.h}" min="1" onchange="updateRow(${r.id},'h',this.value)" style="width:70px"></td>
+      <td><button class="remove-btn" onclick="removeRow(${r.id})">✕</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function updateRow(id, field, val) {
+  const r = rows.find(r => r.id === id);
+  if(r) r[field] = parseFloat(val) || 0;
+}
+
+function loadExample() {
+  rows = [];
+  rowId = 0;
+  [[3,130,70],[4,100,100],[4,100,70],[6,50,70],[2,60,120]].forEach(([c,w,h]) => addRow(c,w,h));
+}
+
+function clearAll() {
+  rows = []; rowId = 0;
+  renderTable();
+  document.getElementById('results').classList.remove('visible');
+}
+
+// ── Core calculation ──
+function getPieces() {
+  const cutType = document.querySelector('input[name="cut_type"]:checked').value;
+  const thick = parseFloat(document.getElementById('wood_thick').value) || 2;
+  const pieces = [];
+  rows.forEach(r => {
+    if(!r.w || !r.h || !r.cnt) return;
+    let long, short_;
+    if(cutType === 'persian') {
+      long = Math.max(r.w, r.h);
+      short_ = Math.min(r.w, r.h);
+    } else {
+      long = Math.max(r.w, r.h);
+      short_ = Math.min(r.w, r.h) - 2 * thick;
+    }
+    const label = `${r.w}×${r.h}`;
+    for(let i = 0; i < r.cnt; i++) {
+      pieces.push({len: long, label, side: 'طول'});
+      pieces.push({len: long, label, side: 'طول'});
+      pieces.push({len: short_, label, side: 'عرض'});
+      pieces.push({len: short_, label, side: 'عرض'});
+    }
+  });
+  // sort descending for better packing
+  pieces.sort((a,b) => b.len - a.len);
+  return pieces;
+}
+
+// First Fit Decreasing bin packing
+function packPieces(pieces, binLen) {
+  const bins = [];
+  pieces.forEach(p => {
+    let placed = false;
+    for(let b of bins) {
+      if(b.remaining >= p.len) {
+        b.items.push(p);
+        b.remaining -= p.len;
+        placed = true;
+        break;
+      }
+    }
+    if(!placed) {
+      bins.push({items:[p], remaining: binLen - p.len});
+    }
+  });
+  return bins;
+}
+
+function calculate() {
+  const allPieces = getPieces();
+  if(allPieces.length === 0) { alert('لطفاً حداقل یک سایز بوم وارد کنید.'); return; }
+
+  const stickLen = parseFloat(document.getElementById('stick_len').value) || 300;
+  const priceStick = parseFloat(document.getElementById('price_stick').value) || 0;
+  const costCut = parseFloat(document.getElementById('cost_cut').value) || 0;
+  const costShip = parseFloat(document.getElementById('cost_ship').value) || 0;
+  const costMisc = parseFloat(document.getElementById('cost_misc').value) || 0;
+
+  // Check feasibility
+  const toolong = allPieces.filter(p => p.len > stickLen);
+  if(toolong.length > 0) {
+    alert(`⚠️ قطعه‌ای به طول ${toolong[0].len} سانت دارید که از شاخه ${stickLen} سانتی بلندتر است!`);
+    return;
+  }
+
+  const bins = packPieces(allPieces, stickLen);
+
+  // ── Summary stats
+  const totalSticks = bins.length;
+  const totalPieces = allPieces.length;
+  const totalWaste = bins.reduce((s,b) => s + b.remaining, 0);
+  const totalUsable = bins.reduce((s,b) => b.remaining < MIN_USABLE ? s : s + b.remaining, 0);
+  const effPct = Math.round((1 - totalWaste/(totalSticks*stickLen))*100);
+
+  // ── render summary cards
+  const sc = document.getElementById('summary-cards');
+  sc.innerHTML = `
+    <div class="stat-card"><div class="val">${totalSticks}</div><div class="lbl">شاخه چوب مورد نیاز</div></div>
+    <div class="stat-card"><div class="val">${totalPieces}</div><div class="lbl">تعداد کل قطعات</div></div>
+    <div class="stat-card"><div class="val ${effPct>=85?'green':effPct>=70?'gold':'red'}">${effPct}٪</div><div class="lbl">کارایی استفاده از چوب</div></div>
+    <div class="stat-card"><div class="val red">${Math.round(totalWaste)}</div><div class="lbl">پرت کل (سانت)</div></div>
+  `;
+
+  // ── Patterns table
+  const colors = ['c0','c1','c2','c3','c4','c5','c6','c7','c8'];
+  const labelColorMap = {};
+  let colorIdx = 0;
+  rows.forEach(r => {
+    const lbl = `${r.w}×${r.h}`;
+    if(!labelColorMap[lbl]) labelColorMap[lbl] = colors[colorIdx++ % colors.length];
+  });
+
+  const pt = document.getElementById('patterns-table');
+  pt.innerHTML = `<tr>
+    <th>شاخه #</th>
+    <th>قطعات برش</th>
+    <th>باقیمانده</th>
+    <th>وضعیت</th>
+    <th>نمودار بصری</th>
+  </tr>`;
+
+  bins.forEach((b, i) => {
+    // group items
+    const groups = {};
+    b.items.forEach(p => {
+      const key = `${p.len}cm (${p.label} — ${p.side})`;
+      groups[key] = (groups[key]||0) + 1;
+    });
+    const piecesText = Object.entries(groups).map(([k,v]) => `${v} × ${k}`).join('<br>');
+    const waste = b.remaining;
+    const wasteBadge = waste < MIN_USABLE
+      ? `<span class="badge badge-red">${waste} سانت (پرت)</span>`
+      : `<span class="badge badge-green">${waste} سانت (قابل استفاده)</span>`;
+
+    // visual bar
+    const barSegs = b.items.map(p => {
+      const pct = (p.len/stickLen*100).toFixed(1);
+      const cls = labelColorMap[p.label] || 'c0';
+      return `<div class="bar-seg ${cls}" style="width:${pct}%" title="${p.len}cm (${p.label})"></div>`;
+    }).join('');
+    const wastePct = (waste/stickLen*100).toFixed(1);
+    const bar = `<div class="bar-wrap">${barSegs}<div class="bar-seg bar-waste" style="width:${wastePct}%"></div></div>`;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>شاخه ${i+1}</strong></td>
+      <td style="text-align:right">${piecesText}</td>
+      <td>${wasteBadge}</td>
+      <td>${waste>=MIN_USABLE?'<span class="badge badge-gold">نگه دارید</span>':'<span class="badge badge-red">پرت</span>'}</td>
+      <td class="bar-cell">${bar}</td>
+    `;
+    pt.appendChild(tr);
+  });
+
+  // ── Parts delivery table
+  const partsTbl = document.getElementById('parts-table');
+  partsTbl.innerHTML = `<tr>
+    <th>سایز بوم</th>
+    <th>تعداد بوم</th>
+    <th>طول قطعات (سانت)</th>
+    <th>تعداد طول</th>
+    <th>عرض قطعات (سانت)</th>
+    <th>تعداد عرض</th>
+    <th>جمع قطعات</th>
+  </tr>`;
+
+  const cutType = document.querySelector('input[name="cut_type"]:checked').value;
+  const thick = parseFloat(document.getElementById('wood_thick').value) || 2;
+
+  rows.forEach(r => {
+    if(!r.w||!r.h||!r.cnt) return;
+    let longLen, shortLen;
+    if(cutType==='persian') {
+      longLen = Math.max(r.w,r.h);
+      shortLen = Math.min(r.w,r.h);
+    } else {
+      longLen = Math.max(r.w,r.h);
+      shortLen = Math.min(r.w,r.h) - 2*thick;
+    }
+    const totalLong = r.cnt * 2;
+    const totalShort = r.cnt * 2;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${r.w}×${r.h}</strong></td>
+      <td>${r.cnt} عدد</td>
+      <td>${longLen} سانت</td>
+      <td>${totalLong} عدد</td>
+      <td>${shortLen} سانت</td>
+      <td>${totalShort} عدد</td>
+      <td><strong>${totalLong+totalShort} قطعه</strong></td>
+    `;
+    partsTbl.appendChild(tr);
+  });
+  // Total row
+  const totQty = rows.reduce((s,r)=>s+(r.cnt||0)*4,0);
+  const totCanv = rows.reduce((s,r)=>s+(r.cnt||0),0);
+  const ttr = document.createElement('tr');
+  ttr.style.background='var(--navy)';ttr.style.color='white';ttr.style.fontWeight='700';
+  ttr.innerHTML=`<td>جمع کل</td><td>${totCanv} بوم</td><td colspan="4"></td><td>${totQty} قطعه</td>`;
+  partsTbl.appendChild(ttr);
+
+  // ── Cost table
+  const woodCost = totalSticks * priceStick;
+  const grandTotal = woodCost + costCut + costShip + costMisc;
+  const ct = document.getElementById('costs-table');
+  ct.innerHTML = `
+    <tr><td class="lbl">تعداد شاخه × قیمت هر شاخه</td><td class="val">${totalSticks} × ${priceStick.toFixed(2)} = ${woodCost.toFixed(2)} لیر</td></tr>
+    <tr><td class="lbl">هزینه برش</td><td class="val">${costCut.toFixed(2)} لیر</td></tr>
+    <tr><td class="lbl">هزینه حمل</td><td class="val">${costShip.toFixed(2)} لیر</td></tr>
+    <tr><td class="lbl">هزینه متفرقه</td><td class="val">${costMisc.toFixed(2)} لیر</td></tr>
+    <tr class="total"><td class="lbl">جمع کل هزینه چوب</td><td class="val">${grandTotal.toFixed(2)} لیر</td></tr>
+    ${grandTotal>0?`<tr><td class="lbl" style="font-size:11px;color:var(--gray)">هزینه چوب هر بوم (میانگین)</td><td class="val" style="font-size:11px">${(grandTotal/Math.max(totCanv,1)).toFixed(2)} لیر</td></tr>`:''}
+  `;
+
+  // ── Waste analysis
+  const usableWaste = bins.filter(b=>b.remaining>=MIN_USABLE).reduce((s,b)=>s+b.remaining,0);
+  const trueWaste = bins.filter(b=>b.remaining<MIN_USABLE).reduce((s,b)=>s+b.remaining,0);
+  const wa = document.getElementById('waste-analysis');
+  wa.innerHTML = `
+    <div style="display:grid;gap:12px">
+      <div class="stat-card"><div class="val green">${Math.round(usableWaste)} سانت</div><div class="lbl">باقیمانده قابل استفاده (≥۱۵ سانت) — نگه دارید</div></div>
+      <div class="stat-card"><div class="val red">${Math.round(trueWaste)} سانت</div><div class="lbl">پرت واقعی (زیر ۱۵ سانت)</div></div>
+      <div class="stat-card"><div class="val">${bins.filter(b=>b.remaining>=MIN_USABLE).length}</div><div class="lbl">شاخه با باقیمانده مفید</div></div>
+    </div>
+    <p style="font-size:11px;color:var(--gray);margin-top:14px;line-height:1.7">
+      💡 قطعات باقیمانده بالای ۱۵ سانت رو نگه دارید — برای بوم‌های کوچک‌تر سفارش بعدی استفاده می‌شن.
+    </p>
+  `;
+
+  document.getElementById('results').classList.add('visible');
+  document.getElementById('results').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+// Init
+loadExample();
+</script>
+</body>
+</html>
