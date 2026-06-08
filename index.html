@@ -295,7 +295,7 @@
         <span>Baran Art Gallery — سیستم مدیریت کارگاه</span>
       </div>
     </div>
-    <div class="header-badge">نسخه ۱.۳</div>
+    <div class="header-badge">نسخه ۱.۴</div>
   </div>
 </header>
 
@@ -512,102 +512,99 @@ function getPieces() {
   return pieces;
 }
 
-// ── Packing algorithms ──
+// ── الگوریتم دقیق بهینه‌سازی برش (برگرفته از روش Pattern Building) ──
 
-function runPack(pieces, binLen, strategy) {
-  const bins = [];
-  const sorted = strategy === 'asc'
-    ? [...pieces].sort((a,b) => a.len - b.len)
-    : [...pieces].sort((a,b) => b.len - a.len);
+function packPieces(allPieces, binLen) {
+  // تبدیل آرایه قطعات به مپ {طول: تعداد}
+  const map = {};
+  allPieces.forEach(p => { map[p.len] = (map[p.len] || 0) + 1; });
 
-  sorted.forEach(p => {
-    let bestIdx = -1;
-    let bestRem = Infinity;
-    for(let i = 0; i < bins.length; i++) {
-      const rem = bins[i].remaining;
-      if(rem >= p.len) {
-        const leftover = rem - p.len;
-        // FFD: اولین جا که جا داره
-        if(strategy === 'ffd' && bestIdx === -1) { bestIdx = i; bestRem = leftover; }
-        // BFD: کمترین فضای باقیمانده
-        else if(strategy !== 'ffd' && leftover < bestRem) { bestRem = leftover; bestIdx = i; }
+  const lengths = Object.keys(map).map(Number).sort((a,b) => b - a);
+  const counts = lengths.map(l => map[l]);
+
+  const totalUsed = lengths.reduce((s,l,i) => s + l * counts[i], 0);
+  const lowerBound = Math.ceil(totalUsed / binLen);
+
+  // ساخت الگوهای برش ممکن
+  function buildPatterns(maxWaste) {
+    const patterns = [];
+    function make(index, vec, sum) {
+      if(index === lengths.length) {
+        const waste = binLen - sum;
+        if(sum > 0 && waste <= maxWaste) {
+          const cuts = [];
+          vec.forEach((q,i) => { for(let k=0;k<q;k++) cuts.push(lengths[i]); });
+          patterns.push({vec: vec.slice(), cuts, sum, waste});
+        }
+        return;
       }
+      const maxQ = Math.min(counts[index], Math.floor((binLen - sum) / lengths[index]));
+      for(let q = maxQ; q >= 0; q--) {
+        vec[index] = q;
+        make(index+1, vec, sum + q * lengths[index]);
+      }
+      vec[index] = 0;
     }
-    if(bestIdx >= 0) {
-      bins[bestIdx].items.push(p);
-      bins[bestIdx].remaining -= p.len;
-    } else {
-      bins.push({items:[p], remaining: binLen - p.len});
+    make(0, Array(lengths.length).fill(0), 0);
+    patterns.sort((a,b) => a.waste !== b.waste ? a.waste - b.waste : b.sum - a.sum);
+    return patterns;
+  }
+
+  function canUse(p, rem) {
+    return p.vec.every((q,i) => q <= rem[i]);
+  }
+
+  function search(rem, barsLeft, patterns, memo) {
+    if(rem.every(x => x === 0)) return [];
+    if(barsLeft === 0) return null;
+    const remTotal = rem.reduce((s,q,i) => s + q * lengths[i], 0);
+    if(Math.ceil(remTotal / binLen) > barsLeft) return null;
+    const key = rem.join(',') + '|' + barsLeft;
+    if(memo[key]) return null;
+    const firstIndex = rem.findIndex(x => x > 0);
+    const minNeeded = Math.max(0, remTotal - (barsLeft-1) * binLen);
+    for(const p of patterns) {
+      if(p.vec[firstIndex] === 0) continue;
+      if(p.sum < minNeeded) continue;
+      if(!canUse(p, rem)) continue;
+      const newRem = rem.map((x,j) => x - p.vec[j]);
+      const result = search(newRem, barsLeft-1, patterns, memo);
+      if(result !== null) return [p.cuts].concat(result);
     }
+    memo[key] = true;
+    return null;
+  }
+
+  const patterns = buildPatterns(40);
+  let finalCuts = null;
+
+  for(let n = lowerBound; n <= lowerBound + 3; n++) {
+    const result = search(counts.slice(), n, patterns, {});
+    if(result !== null) { finalCuts = result; break; }
+  }
+
+  // اگه exact search جواب نداد، BFD پشتیبان
+  if(!finalCuts) {
+    const bins = [];
+    [...allPieces].sort((a,b) => b.len - a.len).forEach(p => {
+      let bi = -1, br = Infinity;
+      bins.forEach((b,i) => { if(b.remaining >= p.len && b.remaining - p.len < br) { br = b.remaining - p.len; bi = i; } });
+      if(bi >= 0) { bins[bi].items.push(p); bins[bi].remaining -= p.len; }
+      else bins.push({items:[p], remaining: binLen - p.len});
+    });
+    return bins;
+  }
+
+  // تبدیل finalCuts به فرمت bins مورد انتظار
+  return finalCuts.map(cuts => {
+    const items = cuts.map(len => {
+      // پیدا کردن یه قطعه با این طول از allPieces
+      const match = allPieces.find(p => p.len === len) || {len, label:'?', side:'?'};
+      return match;
+    });
+    const used = cuts.reduce((s,l) => s+l, 0);
+    return { items, remaining: binLen - used };
   });
-  return bins;
-}
-
-// اجرای چند استراتژی + چند ترتیب مختلف و انتخاب بهترین
-function packPieces(pieces, binLen) {
-  const strategies = ['ffd', 'bfd'];
-  let best = null;
-
-  for(const strat of strategies) {
-    // ترتیب نزولی
-    const r1 = runPack(pieces, binLen, strat);
-    if(!best || r1.length < best.length) best = r1;
-
-    // گروه‌بندی بر اساس اندازه — قطعات هم‌اندازه کنار هم
-    const grouped = [...pieces].sort((a,b) => b.len - a.len || a.label.localeCompare(b.label));
-    const r2 = runPack(grouped, binLen, strat);
-    if(r2.length < best.length) best = r2;
-  }
-
-  // تلاش برای بهبود: merge کردن شاخه‌های پرت‌دار
-  best = tryMergeBins(best, binLen);
-  return best;
-}
-
-// سعی می‌کنه قطعات شاخه‌های ناقص رو در شاخه‌های دیگه جا بده
-function tryMergeBins(bins, binLen) {
-  let improved = true;
-  let result = bins.map(b => ({items:[...b.items], remaining:b.remaining}));
-
-  while(improved) {
-    improved = false;
-    // مرتب‌سازی بر اساس پرت نزولی — شاخه‌های پرتی‌تر اول
-    result.sort((a,b) => b.remaining - a.remaining);
-
-    for(let i = 0; i < result.length; i++) {
-      if(result[i].remaining === binLen) continue; // شاخه خالی
-      // سعی کن همه قطعات این شاخه رو در بقیه شاخه‌ها جا بدی
-      const items = result[i].items;
-      const tempBins = result.filter((_,idx) => idx !== i)
-        .map(b => ({items:[...b.items], remaining:b.remaining}));
-
-      let allPlaced = true;
-      for(const p of items) {
-        let placed = false;
-        // BFD برای جاگذاری
-        let bestIdx2 = -1, bestRem2 = Infinity;
-        for(let j = 0; j < tempBins.length; j++) {
-          if(tempBins[j].remaining >= p.len) {
-            const lr = tempBins[j].remaining - p.len;
-            if(lr < bestRem2) { bestRem2 = lr; bestIdx2 = j; }
-          }
-        }
-        if(bestIdx2 >= 0) {
-          tempBins[bestIdx2].items.push(p);
-          tempBins[bestIdx2].remaining -= p.len;
-          placed = true;
-        }
-        if(!placed) { allPlaced = false; break; }
-      }
-
-      if(allPlaced) {
-        result = tempBins;
-        improved = true;
-        break;
-      }
-    }
-  }
-  return result;
 }
 
 function calculate() {
