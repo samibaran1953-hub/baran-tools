@@ -295,7 +295,7 @@
         <span>Baran Art Gallery — سیستم مدیریت کارگاه</span>
       </div>
     </div>
-    <div class="header-badge">نسخه ۱.۰</div>
+    <div class="header-badge">نسخه ۱.۳</div>
   </div>
 </header>
 
@@ -318,18 +318,15 @@
               <input type="number" id="wood_thick" value="2" min="0.5" step="0.5">
             </div>
           </div>
-          <div class="tip">مثال: شاخه ۳ متری با مقطع ۲×۴ → طول = ۳۰۰، ضخامت = ۲</div>
+          <div class="tip">فارسی‌بر: عرض = اندازه کامل | عمودی: عرض = اندازه منهای ۲×ضخامت | پایه میانی هر دو = عرض منهای ۲×ضخامت</div>
 
           <div class="section-label">نوع برش</div>
           <div class="cut-toggle">
             <input type="radio" name="cut_type" id="ct_perp" value="perp" checked>
-            <label for="ct_perp">⊥ برش عمودی (استاندارد)</label>
+            <label for="ct_perp">⊥ برش عمودی</label>
             <input type="radio" name="cut_type" id="ct_persian" value="persian">
-            <label for="ct_persian">∥ فارسی‌بر (قاب‌کاری)</label>
+            <label for="ct_persian">∥ فارسی‌بر</label>
           </div>
-          <p style="font-size:11px;color:var(--gray);margin-top:8px;text-align:center">
-            برش عمودی: قطعات کوتاه = اندازه منهای ۲×ضخامت | فارسی‌بر: همه قطعات = اندازه اصلی
-          </p>
 
           <div class="divider"></div>
           <div class="section-label">هزینه‌ها</div>
@@ -367,6 +364,7 @@
                 <th>تعداد</th>
                 <th>عرض (سانت)</th>
                 <th>ارتفاع (سانت)</th>
+                <th>پایه میانی</th>
                 <th></th>
               </tr>
             </thead>
@@ -439,9 +437,9 @@ let rows = [];
 let rowId = 0;
 const MIN_USABLE = 15; // سانتیمتر
 
-function addRow(cnt=1, w=0, h=0) {
+function addRow(cnt=1, w=0, h=0, mid=0) {
   const id = rowId++;
-  rows.push({id, cnt, w, h});
+  rows.push({id, cnt, w, h, mid});
   renderTable();
 }
 
@@ -456,9 +454,10 @@ function renderTable() {
   rows.forEach(r => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><input type="number" value="${r.cnt}" min="1" onchange="updateRow(${r.id},'cnt',this.value)" style="width:60px"></td>
-      <td><input type="number" value="${r.w}" min="1" onchange="updateRow(${r.id},'w',this.value)" style="width:70px"></td>
-      <td><input type="number" value="${r.h}" min="1" onchange="updateRow(${r.id},'h',this.value)" style="width:70px"></td>
+      <td><input type="number" value="${r.cnt}" min="1" onchange="updateRow(${r.id},'cnt',this.value)" style="width:55px"></td>
+      <td><input type="number" value="${r.w}" min="1" onchange="updateRow(${r.id},'w',this.value)" style="width:65px"></td>
+      <td><input type="number" value="${r.h}" min="1" onchange="updateRow(${r.id},'h',this.value)" style="width:65px"></td>
+      <td><input type="number" value="${r.mid}" min="0" max="3" onchange="updateRow(${r.id},'mid',this.value)" style="width:50px;background:#FFF9E6;border-color:#C9A84C" title="تعداد پایه میانی"></td>
       <td><button class="remove-btn" onclick="removeRow(${r.id})">✕</button></td>
     `;
     tbody.appendChild(tr);
@@ -473,7 +472,8 @@ function updateRow(id, field, val) {
 function loadExample() {
   rows = [];
   rowId = 0;
-  [[3,130,70],[4,100,100],[4,100,70],[6,50,70],[2,60,120]].forEach(([c,w,h]) => addRow(c,w,h));
+  // [cnt, w, h, mid_supports]
+  [[3,130,70,1],[4,100,100,1],[4,100,70,1],[6,50,70,0],[2,60,120,1]].forEach(([c,w,h,m]) => addRow(c,w,h,m));
 }
 
 function clearAll() {
@@ -489,45 +489,125 @@ function getPieces() {
   const pieces = [];
   rows.forEach(r => {
     if(!r.w || !r.h || !r.cnt) return;
-    let long, short_;
-    if(cutType === 'persian') {
-      long = Math.max(r.w, r.h);
-      short_ = Math.min(r.w, r.h);
-    } else {
-      long = Math.max(r.w, r.h);
-      short_ = Math.min(r.w, r.h) - 2 * thick;
-    }
+    const long = Math.max(r.w, r.h);
+    const shortFull = Math.min(r.w, r.h);
+    const shortInner = shortFull - 2 * thick;
+    // فارسی‌بر: عرض = اندازه کامل / عمودی: عرض = منهای ۲×ضخامت
+    const shortLen = (cutType === 'persian') ? shortFull : shortInner;
+    // پایه میانی هر دو = منهای ۲×ضخامت
+    const midLen = shortInner;
     const label = `${r.w}×${r.h}`;
     for(let i = 0; i < r.cnt; i++) {
       pieces.push({len: long, label, side: 'طول'});
       pieces.push({len: long, label, side: 'طول'});
-      pieces.push({len: short_, label, side: 'عرض'});
-      pieces.push({len: short_, label, side: 'عرض'});
+      pieces.push({len: shortLen, label, side: 'عرض'});
+      pieces.push({len: shortLen, label, side: 'عرض'});
+      const midCount = parseInt(r.mid) || 0;
+      for(let m = 0; m < midCount; m++) {
+        pieces.push({len: midLen, label, side: 'پایه میانی'});
+      }
     }
   });
-  // sort descending for better packing
   pieces.sort((a,b) => b.len - a.len);
   return pieces;
 }
 
-// First Fit Decreasing bin packing
-function packPieces(pieces, binLen) {
+// ── Packing algorithms ──
+
+function runPack(pieces, binLen, strategy) {
   const bins = [];
-  pieces.forEach(p => {
-    let placed = false;
-    for(let b of bins) {
-      if(b.remaining >= p.len) {
-        b.items.push(p);
-        b.remaining -= p.len;
-        placed = true;
-        break;
+  const sorted = strategy === 'asc'
+    ? [...pieces].sort((a,b) => a.len - b.len)
+    : [...pieces].sort((a,b) => b.len - a.len);
+
+  sorted.forEach(p => {
+    let bestIdx = -1;
+    let bestRem = Infinity;
+    for(let i = 0; i < bins.length; i++) {
+      const rem = bins[i].remaining;
+      if(rem >= p.len) {
+        const leftover = rem - p.len;
+        // FFD: اولین جا که جا داره
+        if(strategy === 'ffd' && bestIdx === -1) { bestIdx = i; bestRem = leftover; }
+        // BFD: کمترین فضای باقیمانده
+        else if(strategy !== 'ffd' && leftover < bestRem) { bestRem = leftover; bestIdx = i; }
       }
     }
-    if(!placed) {
+    if(bestIdx >= 0) {
+      bins[bestIdx].items.push(p);
+      bins[bestIdx].remaining -= p.len;
+    } else {
       bins.push({items:[p], remaining: binLen - p.len});
     }
   });
   return bins;
+}
+
+// اجرای چند استراتژی + چند ترتیب مختلف و انتخاب بهترین
+function packPieces(pieces, binLen) {
+  const strategies = ['ffd', 'bfd'];
+  let best = null;
+
+  for(const strat of strategies) {
+    // ترتیب نزولی
+    const r1 = runPack(pieces, binLen, strat);
+    if(!best || r1.length < best.length) best = r1;
+
+    // گروه‌بندی بر اساس اندازه — قطعات هم‌اندازه کنار هم
+    const grouped = [...pieces].sort((a,b) => b.len - a.len || a.label.localeCompare(b.label));
+    const r2 = runPack(grouped, binLen, strat);
+    if(r2.length < best.length) best = r2;
+  }
+
+  // تلاش برای بهبود: merge کردن شاخه‌های پرت‌دار
+  best = tryMergeBins(best, binLen);
+  return best;
+}
+
+// سعی می‌کنه قطعات شاخه‌های ناقص رو در شاخه‌های دیگه جا بده
+function tryMergeBins(bins, binLen) {
+  let improved = true;
+  let result = bins.map(b => ({items:[...b.items], remaining:b.remaining}));
+
+  while(improved) {
+    improved = false;
+    // مرتب‌سازی بر اساس پرت نزولی — شاخه‌های پرتی‌تر اول
+    result.sort((a,b) => b.remaining - a.remaining);
+
+    for(let i = 0; i < result.length; i++) {
+      if(result[i].remaining === binLen) continue; // شاخه خالی
+      // سعی کن همه قطعات این شاخه رو در بقیه شاخه‌ها جا بدی
+      const items = result[i].items;
+      const tempBins = result.filter((_,idx) => idx !== i)
+        .map(b => ({items:[...b.items], remaining:b.remaining}));
+
+      let allPlaced = true;
+      for(const p of items) {
+        let placed = false;
+        // BFD برای جاگذاری
+        let bestIdx2 = -1, bestRem2 = Infinity;
+        for(let j = 0; j < tempBins.length; j++) {
+          if(tempBins[j].remaining >= p.len) {
+            const lr = tempBins[j].remaining - p.len;
+            if(lr < bestRem2) { bestRem2 = lr; bestIdx2 = j; }
+          }
+        }
+        if(bestIdx2 >= 0) {
+          tempBins[bestIdx2].items.push(p);
+          tempBins[bestIdx2].remaining -= p.len;
+          placed = true;
+        }
+        if(!placed) { allPlaced = false; break; }
+      }
+
+      if(allPlaced) {
+        result = tempBins;
+        improved = true;
+        break;
+      }
+    }
+  }
+  return result;
 }
 
 function calculate() {
@@ -621,28 +701,29 @@ function calculate() {
   partsTbl.innerHTML = `<tr>
     <th>سایز بوم</th>
     <th>تعداد بوم</th>
-    <th>طول قطعات (سانت)</th>
+    <th>طول (سانت)</th>
     <th>تعداد طول</th>
-    <th>عرض قطعات (سانت)</th>
+    <th>عرض (سانت)</th>
     <th>تعداد عرض</th>
+    <th>پایه میانی (سانت)</th>
+    <th>تعداد پایه</th>
     <th>جمع قطعات</th>
   </tr>`;
 
-  const cutType = document.querySelector('input[name="cut_type"]:checked').value;
-  const thick = parseFloat(document.getElementById('wood_thick').value) || 2;
+  const cutType2 = document.querySelector('input[name="cut_type"]:checked').value;
+  const thick2 = parseFloat(document.getElementById('wood_thick').value) || 2;
 
   rows.forEach(r => {
     if(!r.w||!r.h||!r.cnt) return;
-    let longLen, shortLen;
-    if(cutType==='persian') {
-      longLen = Math.max(r.w,r.h);
-      shortLen = Math.min(r.w,r.h);
-    } else {
-      longLen = Math.max(r.w,r.h);
-      shortLen = Math.min(r.w,r.h) - 2*thick;
-    }
+    const longLen = Math.max(r.w, r.h);
+    const shortFull = Math.min(r.w, r.h);
+    const shortLen = (cutType2 === 'persian') ? shortFull : shortFull - 2*thick2;
+    const midLen = shortFull - 2*thick2;
+    const midCount = parseInt(r.mid) || 0;
     const totalLong = r.cnt * 2;
     const totalShort = r.cnt * 2;
+    const totalMid = r.cnt * midCount;
+    const totalAll = totalLong + totalShort + totalMid;
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td><strong>${r.w}×${r.h}</strong></td>
@@ -651,16 +732,17 @@ function calculate() {
       <td>${totalLong} عدد</td>
       <td>${shortLen} سانت</td>
       <td>${totalShort} عدد</td>
-      <td><strong>${totalLong+totalShort} قطعه</strong></td>
+      <td>${midCount>0 ? midLen+' سانت' : '—'}</td>
+      <td>${midCount>0 ? totalMid+' عدد' : '—'}</td>
+      <td><strong>${totalAll} قطعه</strong></td>
     `;
     partsTbl.appendChild(tr);
   });
-  // Total row
-  const totQty = rows.reduce((s,r)=>s+(r.cnt||0)*4,0);
+  const totQty = rows.reduce((s,r)=> s + (r.cnt||0)*(4 + (parseInt(r.mid)||0)), 0);
   const totCanv = rows.reduce((s,r)=>s+(r.cnt||0),0);
   const ttr = document.createElement('tr');
   ttr.style.background='var(--navy)';ttr.style.color='white';ttr.style.fontWeight='700';
-  ttr.innerHTML=`<td>جمع کل</td><td>${totCanv} بوم</td><td colspan="4"></td><td>${totQty} قطعه</td>`;
+  ttr.innerHTML=`<td>جمع کل</td><td>${totCanv} بوم</td><td colspan="6"></td><td>${totQty} قطعه</td>`;
   partsTbl.appendChild(ttr);
 
   // ── Cost table
